@@ -3,3 +3,4 @@ JSON-Server: json-server db.json --port 4000
 GraphQL-Server: json-graphql-server db.json --port 3000
 date RDF: node initRDF.js
 Peoxy-Server: node proxy.js
+add your key in .env
