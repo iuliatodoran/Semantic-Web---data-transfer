@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Excursii - Web Semantic</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #2c5f2d; }
+    #chat-box { border: 1px solid #ccc; padding: 15px; height: 300px; overflow-y: auto; margin-bottom: 10px; border-radius: 8px; }
+    .mesaj-user { text-align: right; margin: 8px 0; }
+    .mesaj-user span { background: #2c5f2d; color: white; padding: 8px 12px; border-radius: 12px; display: inline-block; }
+    .mesaj-bot { text-align: left; margin: 8px 0; }
+    .mesaj-bot span { background: #f0f0f0; padding: 8px 12px; border-radius: 12px; display: inline-block; }
+    #input-area { display: flex; gap: 10px; }
+    #mesaj { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+    button { padding: 10px 20px; background: #2c5f2d; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    button:hover { background: #1a3d1a; }
+    .loading { color: #999; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>Asistent Excursii</h1>
+  <p>Intreaba-ma orice despre excursii! Exemple:</p>
+  <ul>
+    <li><em>"Arata-mi excursiile dupa 2026-07-01"</em></li>
+    <li><em>"Excursiile din Italia"</em></li>
+    <li><em>"Adauga participant Ion Popescu, ion@test.com, 2 persoane la excursia 1"</em></li>
+    <li><em>"Adauga excursia Berlin, Germania, 2026-10-01, 900 lei in GraphQL"</em></li>
+    <li><em>"Adauga excursia Londra in RDF cu participantul Maria, maria@test.com"</em></li>
+    <li><em>"Arata participantii la excursia Paris din RDF"</em></li>
+  </ul>
+
+  <div id="chat-box"></div>
+
+  <div id="input-area">
+    <input type="text" id="mesaj" placeholder="Scrie mesajul tau..." />
+    <button onclick="trimite()">Trimite</button>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const inputMesaj = document.getElementById('mesaj');
+
+    inputMesaj.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') trimite();
+    });
+
+    function adaugaMesaj(text, tip) {
+      const div = document.createElement('div');
+      div.className = tip === 'user' ? 'mesaj-user' : 'mesaj-bot';
+      const span = document.createElement('span');
+      span.textContent = text;
+      div.appendChild(span);
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function construiesteTable(data) {
+      if (!data || !Array.isArray(data) || data.length === 0) return '';
+      const keys = Object.keys(data[0]).filter(k => k !== 'id' && k !== 'excursieId');
+      let html = '<table style="width:100%; border-collapse:collapse; margin-top:8px;">';
+      html += '<tr>' + keys.map(k => `<th style="border:1px solid #ccc; padding:6px; background:#2c5f2d; color:white;">${k}</th>`).join('') + '</tr>';
+      data.forEach(row => {
+        html += '<tr>' + keys.map(k => `<td style="border:1px solid #ccc; padding:6px;">${row[k] ?? ''}</td>`).join('') + '</tr>';
+      });
+      html += '</table>';
+      return html;
+    }
+
+    async function trimite() {
+      const mesaj = inputMesaj.value.trim();
+      if (!mesaj) return;
+
+      adaugaMesaj(mesaj, 'user');
+      inputMesaj.value = '';
+
+      const loading = document.createElement('div');
+      loading.className = 'mesaj-bot';
+      loading.innerHTML = '<span class="loading">Se proceseaza...</span>';
+      chatBox.appendChild(loading);
+
+      try {
+        const response = await fetch('http://localhost:5000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: mesaj })
+        });
+
+        const data = await response.json();
+        chatBox.removeChild(loading);
+
+        const div = document.createElement('div');
+        div.className = 'mesaj-bot';
+        
+        const span = document.createElement('span');
+        span.textContent = data.answer || data.error;
+        div.appendChild(span);
+
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          const tableDiv = document.createElement('div');
+          tableDiv.innerHTML = construiesteTable(data.data);
+          tableDiv.style.marginTop = '8px';
+          div.appendChild(tableDiv);
+        }
+
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+      } catch (err) {
+        chatBox.removeChild(loading);
+        adaugaMesaj('Eroare: nu pot contacta serverul.', 'bot');
+      }
+    }
+  </script>
+</body>
+</html>

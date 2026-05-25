@@ -1,0 +1,19 @@
+{
+  "excursie": [
+    { "id": 1, "destinatie": "Paris", "tara": "Franta", "data_plecare": "2026-06-10", "pret": 1200 },
+    { "id": 2, "destinatie": "Roma", "tara": "Italia", "data_plecare": "2026-07-15", "pret": 950 },
+    { "id": 3, "destinatie": "Barcelona", "tara": "Spania", "data_plecare": "2026-08-01", "pret": 1100 },
+    { "id": 4, "destinatie": "Viena", "tara": "Austria", "data_plecare": "2026-06-20", "pret": 800 },
+    { "id": 5, "destinatie": "Praga", "tara": "Cehia", "data_plecare": "2026-09-05", "pret": 750 }
+  ],
+  "participant": [
+    { "id": 1, "excursieId": 1, "nume": "Ion Popescu", "email": "ion@mail.com", "nr_persoane": 2 },
+    { "id": 2, "excursieId": 1, "nume": "Ana Ionescu", "email": "ana@mail.com", "nr_persoane": 1 },
+    { "id": 3, "excursieId": 2, "nume": "Maria Popa", "email": "maria@mail.com", "nr_persoane": 3 },
+    { "id": 4, "excursieId": 2, "nume": "Andrei Stan", "email": "andrei@mail.com", "nr_persoane": 2 },
+    { "id": 5, "excursieId": 3, "nume": "Elena Dumitrescu", "email": "elena@mail.com", "nr_persoane": 1 },
+    { "id": 6, "excursieId": 3, "nume": "Mihai Georgescu", "email": "mihai@mail.com", "nr_persoane": 4 },
+    { "id": 7, "excursieId": 4, "nume": "Ioana Marin", "email": "ioana@mail.com", "nr_persoane": 2 },
+    { "id": 8, "excursieId": 5, "nume": "Alexandru Nistor", "email": "alex@mail.com", "nr_persoane": 1 }
+  ]
+}
